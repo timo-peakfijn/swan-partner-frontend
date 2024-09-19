@@ -106,6 +106,7 @@ const routes = {
 
       ...createGroup("Profile", "/:merchantProfileId", {
         Area: "/*",
+        Payments: "/payments",
         Settings: "/?:check{declare|next}",
       }),
     }),

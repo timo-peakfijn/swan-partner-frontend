@@ -2169,6 +2169,84 @@ query MerchantProfiles(
   }
 }
 
+fragment MerchantPayment on MerchantPayment {
+  id
+  reference
+  label
+  externalReference
+  billingAddress {
+    addressLine1
+    addressLine2
+    city
+    postalCode
+    state
+    country
+  }
+  threeDS {
+    requested
+    statusInfo {
+      status
+    }
+  }
+  createdAt
+  updatedAt
+  statusInfo {
+    ... on MerchantPaymentAuthorized {
+      status
+    }
+    ... on MerchantPaymentCaptured {
+      status
+    }
+    ... on MerchantPaymentInitiated {
+      status
+    }
+    ... on MerchantPaymentRejected {
+      status
+      reason
+    }
+  }
+  amount {
+    value
+    currency
+  }
+  paymentMandateId
+  paymentLinkId
+  paymentMethodId
+  balance {
+    availableToCancel
+    availableToCapture
+    availableToRefund
+    totalAuthorized
+    totalCanceled
+    totalCaptured
+    totalDisputed
+    totalRefunded
+  }
+}
+
+query MerchantProfilePayments(
+  $merchantProfileId: ID!
+  $first: Int!
+  $after: String
+  $orderBy: MerchantPaymentOrderByInput
+  $filters: MerchantPaymentFiltersInput
+) {
+  merchantProfile(id: $merchantProfileId) {
+    merchantPayments(first: $first, after: $after, orderBy: $orderBy, filters: $filters) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...MerchantPayment
+        }
+      }
+    }
+  }
+}
+
 # Mutations
 
 mutation CreateMultiConsent($input: CreateMultiConsentInput!) {

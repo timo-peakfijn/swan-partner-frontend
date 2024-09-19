@@ -12,6 +12,7 @@ import { MerchantProfileDocument } from "../graphql/partner";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { Router } from "../utils/routes";
 import { ErrorView } from "./ErrorView";
+import { MerchantProfilePaymentList } from "./MerchantProfilePaymentList";
 import { MerchantProfileSettings } from "./MerchantProfileSettings";
 
 const styles = StyleSheet.create({
@@ -41,7 +42,10 @@ export const AccountMerchantsProfileArea = ({
   merchantProfileInternalDirectDebitB2BVisible,
   merchantProfileCheckVisible,
 }: Props) => {
-  const route = Router.useRoute(["AccountMerchantsProfileSettings"]);
+  const route = Router.useRoute([
+    "AccountMerchantsProfileSettings",
+    "AccountMerchantsProfilePayments",
+  ]);
 
   const [merchantProfile, { refresh }] = useQuery(MerchantProfileDocument, { merchantProfileId });
 
@@ -72,6 +76,9 @@ export const AccountMerchantsProfileArea = ({
             AsyncData.P.Done(Result.P.Ok({ merchantProfile: P.select(P.nonNullable) })),
             merchantProfile =>
               match(route)
+                .with({ name: "AccountMerchantsProfilePayments" }, ({ params }) => (
+                  <MerchantProfilePaymentList merchantProfileId={merchantProfileId} />
+                ))
                 .with({ name: "AccountMerchantsProfileSettings" }, ({ params }) => (
                   <MerchantProfileSettings
                     params={params}
